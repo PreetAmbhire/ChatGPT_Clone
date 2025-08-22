@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import ChatInput from "../components/Chat/ChatInput";
 import Chat from "../components/Chat/Chat";
-import SelectionBar from "../components/Chat/SelectionBar";
 import { PlusIcon } from "../components/Icons";
 
 type Msg = { id: string; role: "user" | "assistant"; content: string };
@@ -13,7 +12,7 @@ export default function Page() {
     {
       id: "m0",
       role: "assistant",
-      content: "Hey Preet! I'm your pixel-perfect clone. ✨",
+      content: "Welcome! How may I help you today?",
     },
   ]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -72,14 +71,6 @@ export default function Page() {
           </div>
         </div>
       </div>
-
-      {/* Sticky selection bar */}
-      {selectedMsg && (
-        <SelectionBar
-          text={selectedMsg.content}
-          onClear={() => setSelectedId(null)}
-        />
-      )}
 
       {/* Composer */}
       <div className="sticky bottom-0 z-10 mx-auto w-full max-w-3xl px-4 pb-4 sm:px-6 sm:pb-6">
