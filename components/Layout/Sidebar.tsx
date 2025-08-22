@@ -67,7 +67,9 @@ export default function Sidebar() {
 
           {/* New Chat */}
           <button
-            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${buttonWidth} justify-start`}
+            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
+              collapsed ? "w-12 justify-center" : "w-40 justify-start"
+            }`}
             title="New Chat"
           >
             <NewChatIcon className="h-4 w-4" />
@@ -76,7 +78,9 @@ export default function Sidebar() {
 
           {/* Library */}
           <button
-            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${buttonWidth} justify-start`}
+            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
+              collapsed ? "w-12 justify-center" : "w-40 justify-start"
+            }`}
             title="Library"
           >
             <LibraryIcon className="h-4 w-4" />
