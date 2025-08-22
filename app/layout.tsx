@@ -1,25 +1,26 @@
 import "../styles/globals.css";
 import Sidebar from "../components/Layout/Sidebar";
 import Header from "../components/Layout/Header";
-
-export const metadata = {
-  title: "ChatGPT",
-};
-
+export const metadata = { title: "ChatGPT", icons: { icon: "/favicon.ico" } };
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="flex h-screen font-inter bg-[#f7f7f8] dark:bg-[#202123] text-gray-900 dark:text-gray-100">
-        <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          {children}
-        </div>
-      </body>
+    <html lang="en" className="h-full">
+      {" "}
+      <body className="h-full">
+        {" "}
+        <div className="flex h-screen w-screen overflow-hidden bg-[#f7f7f8] text-[#0c0c0d] dark:bg-[#202123] dark:text-[#ececf1]">
+          {" "}
+          <Sidebar />{" "}
+          <div className="flex min-w-0 flex-1 flex-col">
+            {" "}
+            <Header /> {children}{" "}
+          </div>{" "}
+        </div>{" "}
+      </body>{" "}
     </html>
   );
 }

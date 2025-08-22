@@ -1,0 +1,233 @@
+name: Sync READMEs for Team LZ with Full Terraform Docs & Provider Versions
+
+on:
+  schedule:
+    # Every Sunday midnight IST = Saturday 18:30 UTC
+    - cron: "30 18 * * 6"
+  workflow_dispatch:
+
+jobs:
+  update-readmes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout automation repo
+        uses: actions/checkout@v4
+
+      - name: Fetch all LZ repos
+        id: repos
+        run: |
+          repos=$(gh repo list YOUR-ORG --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
+          echo "repos=$repos" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Update README in each repo
+        run: |
+          for repo in $repos; do
+            echo "Processing $repo..."
+
+            # Skip archived repos
+            is_archived=$(gh repo view "$repo" --json isArchived -q '.isArchived')
+            if [ "$is_archived" = "true" ]; then
+              echo "Skipping archived repo $repo"
+              continue
+            fi
+
+            # Skip empty repos
+            commits_count=$(gh repo view "$repo" --json defaultBranchRef -q '.defaultBranchRef.target.history.totalCount' || echo 0)
+            if [ "$commits_count" -eq 0 ]; then
+              echo "Skipping empty repo $repo"
+              continue
+            fi
+            
+            default_branch=$(gh repo view "$repo" --json defaultBranchRef -q '.defaultBranchRef.name' || echo "main")
+
+            # Attempt clone, skip if fails
+            if ! git clone --branch "$default_branch" "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$repo.git"; then
+              echo "Skipping $repo, cannot clone."
+              continue
+            fi
+
+            cd "$(basename "$repo")"
+
+            # Check for Terraform files
+            tf_files=$(find . -name "*.tf")
+
+            if [ -n "$tf_files" ]; then
+               # Repo has Terraform files, generate full tables
+              modules_count=0
+              resources_count=0
+              outputs_count=0
+              providers_info=""
+
+              for tf_file in $tf_files; do
+                modules_count=$((modules_count + $(grep -c 'module "' $tf_file || echo 0)))
+                resources_count=$((resources_count + $(grep -c 'resource "' $tf_file || echo 0)))
+                outputs_count=$((outputs_count + $(grep -c 'output "' $tf_file || echo 0)))
+
+                # Parse providers & versions
+                provider_blocks=$(grep -Pzo 'required_providers\s*{[^}]*}' $tf_file || true)
+                while IFS= read -r line; do
+                  if [[ $line =~ ([a-zA-Z0-9_]+)\s*=\s*{[[:space:]]*version\s*=\s*\"([^\"]+)\" ]]; then
+                    prov_name="${BASH_REMATCH[1]}"
+                    prov_ver="${BASH_REMATCH[2]}"
+                    providers_info="$providers_info| $prov_name | $tf_file | $prov_ver |\n"
+                  fi
+                done <<< "$provider_blocks"
+            done
+
+            # Generate README.md with Markdown tables
+            cat > README.md <<EOF
+# Auto README for $repo
+
+This README was updated automatically on $(date '+%Y-%m-%d %H:%M:%S %Z')
+
+Landing Zone: (https://github.com/txx6-ov95)
+
+## 🏗️ Terraform Version
+$(terraform --version | head -n1 | awk '{print $2}')
+
+## 📊 Terraform Summary
+| Modules | Resources | Outputs |
+|---------|----------|--------|
+| $modules_count | $resources_count | $outputs_count |
+
+## ⚙️ Providers Used
+| Provider | Path | Version |
+|---------|------|---------|
+EOF
+
+            # Terraform version
+            if [ -f ".terraform-version" ]; then
+              tf_version=$(cat .terraform-version)
+            else
+              tf_version=$(terraform --version | head -n1 | awk '{print $2}')
+            fi
+            echo "" >> README.md
+            echo "## 🏗️ Terraform Version" >> README.md
+            echo "$tf_version" >> README.md
+
+            # Find Terraform files
+            tf_files=$(find . -name "*.tf")
+            
+            if [ -n "$tf_files" ]; then
+              modules_count=0
+              resources_count=0
+              outputs_count=0
+              providers_info=""
+
+              for tf_file in $tf_files; do
+                modules_count=$((modules_count + $(grep -c 'module "' $tf_file || echo 0)))
+                resources_count=$((resources_count + $(grep -c 'resource "' $tf_file || echo 0)))
+                outputs_count=$((outputs_count + $(grep -c 'output "' $tf_file || echo 0)))
+
+                # Parse providers and versions
+                provider_blocks=$(grep -Pzo 'required_providers\s*{[^}]*}' $tf_file || true)
+                while IFS= read -r line; do
+                  if [[ $line =~ ([a-zA-Z0-9_]+)\s*=\s*{[[:space:]]*version\s*=\s*\"([^\"]+)\" ]]; then
+                    prov_name="${BASH_REMATCH[1]}"
+                    prov_ver="${BASH_REMATCH[2]}"
+                    providers_info="$providers_info| $prov_name | $tf_file | $prov_ver |\n"
+                  fi
+                done <<< "$provider_blocks"
+              done
+
+              # Summary Table
+              echo "" >> README.md
+              echo "## 📊 Terraform Summary" >> README.md
+              echo "| Modules | Resources | Outputs |" >> README.md
+              echo "|---------|----------|--------|" >> README.md
+              echo "| $modules_count | $resources_count | $outputs_count |" >> README.md
+
+              # Providers Table
+              echo "" >> README.md
+              echo "## ⚙️ Providers Used" >> README.md
+              echo "| Provider | Path | Version |" >> README.md
+              echo "|---------|------|---------|" >> README.md
+              if [ -n "$providers_info" ]; then
+                echo -e "$providers_info" >> README.md
+              else
+                # fallback for providers without required_providers
+                for tf_file in $tf_files; do
+                  grep -E '^provider "' $tf_file | awk -v f="$tf_file" -F'"' '{print "| "$2" | "f" | not-specified |"}' >> README.md || true
+                done
+              fi
+
+              # Modules / Resources / Outputs Table
+              echo "" >> README.md
+              echo "## 🛠️ Terraform Modules, Resources & Outputs" >> README.md
+              echo "| Name | Type | Path |" >> README.md
+              echo "|------|------|------|" >> README.md
+              for tf_file in $tf_files; do
+                modules=$(grep -E 'module "' $tf_file | awk -F'"' '{print $2}')
+                resources=$(grep -E 'resource "' $tf_file | awk -F'"' '{print $2 " " $3}')
+                outputs=$(grep -E 'output "' $tf_file | awk -F'"' '{print $2}')
+                for m in $modules; do echo "| $m | module | $tf_file |" >> README.md; done
+                for r in $resources; do echo "| $r | resource | $tf_file |" >> README.md; done
+                for o in $outputs; do echo "| $o | output | $tf_file |" >> README.md; done
+              done
+
+              # Module Inputs & Outputs
+              echo "" >> README.md
+              echo "## 🧩 Module Inputs and Outputs" >> README.md
+              for tf_file in $tf_files; do
+                module_names=$(grep -E 'module "' $tf_file | awk -F'"' '{print $2}')
+                for m in $module_names; do
+                  echo "" >> README.md
+                  echo "### Module: $m (from $tf_file)" >> README.md
+
+                  # Inputs
+                  inputs=$(grep -A10 "module \"$m\"" $tf_file | grep -E '^\s+[a-zA-Z0-9_]+ =')
+                  if [ -n "$inputs" ]; then
+                    echo "**Inputs:**" >> README.md
+                    echo "| Input | Default |" >> README.md
+                    echo "|-------|--------|" >> README.md
+                    echo "$inputs" | awk -F'=' '{gsub(/^ +| +$/,"",$1); gsub(/^ +| +$/,"",$2); print "| "$1" | "$2" |"}' >> README.md
+                  else
+                    echo "**Inputs:** None detected" >> README.md
+                  fi
+
+                  # Outputs from outputs.tf
+                  outputs_file=$(dirname $tf_file)/outputs.tf
+                  if [ -f "$outputs_file" ]; then
+                    module_outputs=$(grep -E 'output "' "$outputs_file" | awk -F'"' '{print $2}')
+                    if [ -n "$module_outputs" ]; then
+                      echo "**Outputs:**" >> README.md
+                      echo "| Output | Path |" >> README.md
+                      echo "|--------|------|" >> README.md
+                      for o in $module_outputs; do
+                        echo "| $o | $outputs_file |" >> README.md
+                      done
+                    else
+                      echo "**Outputs:** None detected" >> README.md
+                    fi
+                  else
+                    echo "**Outputs:** None detected" >> README.md
+                  fi
+                done
+              done
+
+            else
+              # Repo has NO Terraform files, simple README
+              cat > README.md <<EOF
+# Auto README for $repo
+
+This README was updated automatically on $(date '+%Y-%m-%d %H:%M:%S %Z')
+
+Landing Zone: (https://github.com/txx6-ov95)
+
+No Terraform files found in this repo.
+EOF
+            fi
+
+            # Commit & push
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add README.md
+            git commit -m "chore: auto-update README with full Terraform docs including provider versions" || echo "No changes"
+            git push origin "$default_branch" || echo "Push failed"
+
+            cd ..
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
