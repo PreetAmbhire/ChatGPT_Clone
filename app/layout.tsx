@@ -14,13 +14,13 @@ export default function RootLayout({
         {" "}
         <div className="flex h-screen w-screen overflow-hidden bg-[#f7f7f8] text-[#0c0c0d] dark:bg-[#202123] dark:text-[#ececf1]">
           {" "}
-          <Sidebar />{" "}
+          <Sidebar />
           <div className="flex min-w-0 flex-1 flex-col">
             {" "}
-            <Header /> {children}{" "}
-          </div>{" "}
-        </div>{" "}
-      </body>{" "}
+            <Header /> {children}
+          </div>
+        </div>
+      </body>
     </html>
   );
 }

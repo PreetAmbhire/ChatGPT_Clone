@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatInput from "../components/Chat/ChatInput";
 import Chat from "../components/Chat/Chat";
-// import SelectionBar from "../components/Chat/SelectionBar";
+import SelectionBar from "../components/Chat/SelectionBar";
 import { PlusIcon } from "../components/Icons";
 
 type Msg = { id: string; role: "user" | "assistant"; content: string };
@@ -19,16 +19,17 @@ export default function Page() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
+  // Generate unique IDs safely
+  const generateId = () =>
+    crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
+
   const send = (text: string) => {
     if (!text.trim()) return;
-    const user: Msg = { id: crypto.randomUUID(), role: "user", content: text };
+
+    const user: Msg = { id: generateId(), role: "user", content: text };
     setMessages((m) => [...m, user]);
 
-    const reply: Msg = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: "",
-    };
+    const reply: Msg = { id: generateId(), role: "assistant", content: "" };
     setMessages((m) => [...m, reply]);
 
     const chunks = `You said: **${text}**`.split("");
@@ -52,7 +53,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-0 flex-1 flex-col bg-[#f7f7f8] dark:bg-[#343541]">
-      {/* list */}
+      {/* Chat list */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6">
         <div className="mx-auto w-full max-w-3xl py-6 sm:py-10">
           <div className="space-y-4">
@@ -72,7 +73,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* sticky selection bar */}
+      {/* Sticky selection bar */}
       {selectedMsg && (
         <SelectionBar
           text={selectedMsg.content}
@@ -80,7 +81,7 @@ export default function Page() {
         />
       )}
 
-      {/* composer */}
+      {/* Composer */}
       <div className="sticky bottom-0 z-10 mx-auto w-full max-w-3xl px-4 pb-4 sm:px-6 sm:pb-6">
         <ChatInput onSend={send} />
         <p className="mt-3 text-center text-xs text-[#6b6c70] dark:text-[#9aa0a6]">
@@ -88,14 +89,14 @@ export default function Page() {
         </p>
       </div>
 
-      {/* Mobile floating + New chat button */}
+      {/* Mobile floating New chat button */}
       <button
         className="fixed bottom-20 right-5 z-30 inline-flex items-center justify-center rounded-full bg-[#10a37f] p-4 text-white shadow-lg hover:bg-[#0e8f71] md:hidden"
         title="New chat"
         onClick={() =>
           setMessages([
             {
-              id: crypto.randomUUID(),
+              id: generateId(),
               role: "assistant",
               content: "New chat started.",
             },
