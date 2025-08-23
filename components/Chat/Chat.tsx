@@ -6,15 +6,16 @@ export default function Chat({
   content,
   selected,
   onSelect,
+  onEdit,
 }: {
   role: "user" | "assistant";
   content: string;
   selected?: boolean;
   onSelect?: () => void;
+  onEdit?: () => void;
 }) {
   const isUser = role === "user";
 
-  // Default bot greeting if content is empty
   const displayContent =
     !content && !isUser ? "Welcome! How can I help you today?" : content;
 
@@ -31,7 +32,11 @@ export default function Chat({
           <ReactMarkdown>{displayContent}</ReactMarkdown>
         </div>
 
-        {!isUser && <MessageActions text={displayContent} />}
+        <MessageActions
+          text={displayContent}
+          role={role}
+          onEdit={isUser ? onEdit : undefined}
+        />
       </div>
     </div>
   );
