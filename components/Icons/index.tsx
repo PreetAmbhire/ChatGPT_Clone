@@ -133,6 +133,41 @@ export const PaperclipIcon = ({ className }: IconProps) => (
     <path d="M7 12v4a7 7 0 0 0 14 0" />
   </svg>
 );
+export const MagicEditIcon = ({ className }: IconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={cx("stroke-current", className)}
+    fill="none"
+    strokeWidth="1"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Pencil (angled body) */}
+    <path d="M16.5 3.5l4 4-11 11H5.5v-4l11-11z" />
+
+    {/* Filled Sparkle (diamond) */}
+    <path
+      d="M8 2.5 L9 4 L10.5 5 L9 6 L8 7.5 L7 6 L5.5 5 L7 4 Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+export const GlobeIcon = ({ className }: IconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={cx("stroke-current", className)}
+    fill="none"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20" /> {/* horizontal */}
+    <path d="M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20z" />{" "}
+    {/* vertical ellipse */}
+  </svg>
+);
+
 export const SendIcon = ({ className }: IconProps) => (
   <svg
     viewBox="0 0 24 24"
