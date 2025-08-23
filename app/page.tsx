@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatInput from "../components/Chat/ChatInput";
 import Chat from "../components/Chat/Chat";
+import Header from "../components/Layout/Header";
 import { PlusIcon } from "../components/Icons";
 
 type Msg = { id: string; role: "user" | "assistant"; content: string };
@@ -51,51 +52,55 @@ export default function Page() {
   const selectedMsg = messages.find((m) => m.id === selectedId);
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col bg-[#f7f7f8] dark:bg-[#343541]">
-      {/* Chat list */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6">
-        <div className="mx-auto w-full max-w-3xl py-6 sm:py-10">
-          <div className="space-y-4">
-            {messages.map((m) => (
-              <Chat
-                key={m.id}
-                role={m.role}
-                content={m.content}
-                selected={m.id === selectedId}
-                onSelect={() =>
-                  setSelectedId((cur) => (cur === m.id ? null : m.id))
-                }
-              />
-            ))}
-            <div ref={endRef} />
+    <>
+      <Header />
+
+      <main className="flex min-h-0 flex-1 flex-col bg-[#f7f7f8] dark:bg-[#343541]">
+        {/* Chat list */}
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+          <div className="mx-auto w-full max-w-3xl py-6 sm:py-10">
+            <div className="space-y-4">
+              {messages.map((m) => (
+                <Chat
+                  key={m.id}
+                  role={m.role}
+                  content={m.content}
+                  selected={m.id === selectedId}
+                  onSelect={() =>
+                    setSelectedId((cur) => (cur === m.id ? null : m.id))
+                  }
+                />
+              ))}
+              <div ref={endRef} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Composer */}
-      <div className="sticky bottom-0 z-10 mx-auto w-full max-w-3xl px-4 pb-4 sm:px-6 sm:pb-6">
-        <ChatInput onSend={send} />
-        <p className="mt-3 text-center text-xs text-[#6b6c70] dark:text-[#9aa0a6]">
-          ChatGPT can make mistakes. Check important info.
-        </p>
-      </div>
+        {/* Composer */}
+        <div className="sticky bottom-0 z-10 mx-auto w-full max-w-3xl px-4 pb-4 sm:px-6 sm:pb-6">
+          <ChatInput onSend={send} />
+          <p className="mt-3 text-center text-xs text-[#6b6c70] dark:text-[#9aa0a6]">
+            ChatGPT can make mistakes. Check important info.
+          </p>
+        </div>
 
-      {/* Mobile floating New chat button */}
-      <button
-        className="fixed bottom-20 right-5 z-30 inline-flex items-center justify-center rounded-full bg-[#10a37f] p-4 text-white shadow-lg hover:bg-[#0e8f71] md:hidden"
-        title="New chat"
-        onClick={() =>
-          setMessages([
-            {
-              id: generateId(),
-              role: "assistant",
-              content: "New chat started.",
-            },
-          ])
-        }
-      >
-        <PlusIcon className="h-5 w-5" />
-      </button>
-    </main>
+        {/* Mobile floating New chat button */}
+        <button
+          className="fixed bottom-20 right-5 z-30 inline-flex items-center justify-center rounded-full bg-[#10a37f] p-4 text-white shadow-lg hover:bg-[#0e8f71] md:hidden"
+          title="New chat"
+          onClick={() =>
+            setMessages([
+              {
+                id: generateId(),
+                role: "assistant",
+                content: "New chat started.",
+              },
+            ])
+          }
+        >
+          <PlusIcon className="h-5 w-5" />
+        </button>
+      </main>
+    </>
   );
 }

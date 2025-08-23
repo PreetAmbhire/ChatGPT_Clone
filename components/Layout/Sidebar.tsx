@@ -19,11 +19,6 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(SIDEBAR_KEY);
-    if (saved) setCollapsed(saved === "1");
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem(SIDEBAR_KEY, collapsed ? "1" : "0");
   }, [collapsed]);
 
@@ -33,12 +28,9 @@ export default function Sidebar() {
   return (
     <div className="overflow-x-hidden relative">
       <aside
-        className={`fixed z-40 flex h-full flex-col border-r border-[#e5e7eb] bg-[#f7f7f8] transition-all duration-200 dark:border-[#2a2b32] dark:bg-[#202123]
-          ${
-            collapsed
-              ? "md:w-16 w-full max-w-full"
-              : "md:w-64 w-full max-w-full"
-          } min-w-0`}
+        className={`z-40 flex h-screen flex-shrink-0 flex-col border-r border-[#e5e7eb] bg-[#f7f7f8] transition-all duration-200 dark:border-[#2a2b32] dark:bg-[#202123] ${
+          collapsed ? "w-16" : "w-64"
+        }`}
       >
         {/* Top Section */}
         <div className="flex flex-col px-3 py-3 min-w-0 gap-2">
@@ -65,7 +57,6 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* New Chat */}
           {/* New Chat */}
           <button
             className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0
