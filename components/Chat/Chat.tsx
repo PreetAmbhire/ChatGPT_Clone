@@ -1,5 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import MessageActions from "./MessageActions";
+import { DotsIcon } from "../Icons";
 
 export default function Chat({
   role,
@@ -22,6 +23,9 @@ export default function Chat({
     <div
       className={`w-full flex mb-2 ${isUser ? "justify-end" : "justify-start"}`}
     >
+      {/* {<div style={{ width: "20px" }}>
+        <DotsIcon />
+      </div>} */}
       <div
         role="button"
         onClick={onSelect}

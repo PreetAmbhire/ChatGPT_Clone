@@ -10,6 +10,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   RobotIcon,
+  DotsIcon,
 } from "../Icons";
 import favicon from "../Icons/favicon.ico";
 
@@ -87,14 +88,29 @@ export default function Sidebar() {
           {Array.from({ length: 14 }).map((_, i) => (
             <button
               key={i}
-              className="group mt-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0"
-              title={`Conversation ${i + 1}`}
+              className="group relative flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0"
             >
               <RobotIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
               {!collapsed && (
                 <span className="line-clamp-1 min-w-0">{`Conversation ${
                   i + 1
                 }`}</span>
+              )}
+
+              {/* DotsIcon - child of button, shows on hover */}
+              {!collapsed && (
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100">
+                  <button
+                    type="button"
+                    className="p-1"
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent parent button click
+                      console.log(`Clicked DotsIcon for Conversation ${i + 1}`);
+                    }}
+                  >
+                    <DotsIcon className="h-4 w-4 text-[#6b6c70] dark:text-[#9aa0a6]" />
+                  </button>
+                </span>
               )}
             </button>
           ))}
