@@ -84,23 +84,6 @@ export default function Page() {
             ChatGPT can make mistakes. Check important info.
           </p>
         </div>
-
-        {/* Mobile floating New chat button */}
-        <button
-          className="fixed bottom-20 right-5 z-30 inline-flex items-center justify-center rounded-full bg-[#10a37f] p-4 text-white shadow-lg hover:bg-[#0e8f71] md:hidden"
-          title="New chat"
-          onClick={() =>
-            setMessages([
-              {
-                id: generateId(),
-                role: "assistant",
-                content: "New chat started.",
-              },
-            ])
-          }
-        >
-          <PlusIcon className="h-5 w-5" />
-        </button>
       </main>
     </>
   );
