@@ -16,6 +16,7 @@ export default function Page() {
       content: "Welcome! How may I help you today?",
     },
   ]);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +56,7 @@ export default function Page() {
     <>
       <Header />
 
-      <main className="flex min-h-0 flex-1 flex-col bg-[#f7f7f8] dark:bg-[#343541]">
+      <main className="flex min-h-0 flex-1 flex-col bg-[#343541] text-[#ececf1]">
         {/* Chat list */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6">
           <div className="mx-auto w-full max-w-3xl py-6 sm:py-10">
@@ -79,7 +80,7 @@ export default function Page() {
         {/* Composer */}
         <div className="sticky bottom-0 z-10 mx-auto w-full max-w-3xl px-4 pb-4 sm:px-6 sm:pb-6">
           <ChatInput onSend={send} />
-          <p className="mt-3 text-center text-xs text-[#6b6c70] dark:text-[#9aa0a6]">
+          <p className="mt-3 text-center text-xs text-[#9aa0a6]">
             ChatGPT can make mistakes. Check important info.
           </p>
         </div>
