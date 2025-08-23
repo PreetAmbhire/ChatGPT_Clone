@@ -23,8 +23,6 @@ export default function Chat({
       className={`w-full flex mb-2 ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        role="button"
-        onClick={onSelect}
         className={`group relative flex px-4 py-3 rounded-2xl max-w-[50%] ${
           isUser ? "bg-[#444654]" : "bg-[#343541]"
         } ${selected ? "ring-2 ring-[#10a37f]" : ""}`}
