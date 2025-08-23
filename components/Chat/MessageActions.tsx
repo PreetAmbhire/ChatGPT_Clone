@@ -36,11 +36,6 @@ export default function MessageActions({ text }: { text: string }) {
           <ThumbDownIcon className="h-4 w-4" />
         </button>
       </Tooltip>
-      <Tooltip label="More">
-        <button className="rounded p-1 text-[#b0b4ba] hover:bg-white/10">
-          <DotsIcon className="h-4 w-4" />
-        </button>
-      </Tooltip>
     </div>
   );
 }

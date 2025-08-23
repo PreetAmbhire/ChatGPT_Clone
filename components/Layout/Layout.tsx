@@ -1,15 +1,14 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 type Props = { children: ReactNode };
 
 const Layout: React.FC<Props> = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
   return (
-    <div className={`${darkMode ? "dark" : ""}`}>
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="dark">
+      <div className="flex h-screen bg-[#343541] text-[#e5e7eb]">
         <Sidebar />
         <div className="flex flex-col flex-1">
           <Header />
