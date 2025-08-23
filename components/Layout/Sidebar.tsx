@@ -66,25 +66,28 @@ export default function Sidebar() {
           </div>
 
           {/* New Chat */}
+          {/* New Chat */}
           <button
-            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
-              collapsed ? "w-12 justify-center" : "w-40 justify-start"
-            }`}
+            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0
+              ${collapsed ? "w-12 justify-center" : "w-full justify-start"}`}
             title="New Chat"
           >
-            <NewChatIcon className="h-4 w-4" />
-            {!collapsed && <span>New Chat</span>}
+            <NewChatIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
+            {!collapsed && (
+              <span className="line-clamp-1 min-w-0">New Chat</span>
+            )}
           </button>
 
           {/* Library */}
           <button
-            className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#111] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
-              collapsed ? "w-12 justify-center" : "w-40 justify-start"
-            }`}
+            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0
+              ${collapsed ? "w-12 justify-center" : "w-full justify-start"}`}
             title="Library"
           >
-            <LibraryIcon className="h-4 w-4" />
-            {!collapsed && <span>Library</span>}
+            <LibraryIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
+            {!collapsed && (
+              <span className="line-clamp-1 min-w-0">Library</span>
+            )}
           </button>
         </div>
 
