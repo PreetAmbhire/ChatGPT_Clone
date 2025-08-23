@@ -135,10 +135,10 @@ export const PaperclipIcon = ({ className }: IconProps) => (
 );
 export const MagicEditIcon = ({ className }: IconProps) => (
   <svg
-    viewBox="0 0 24 24"
+    viewBox="0 0 21 21"
     className={cx("stroke-current", className)}
     fill="none"
-    strokeWidth="1"
+    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
   >

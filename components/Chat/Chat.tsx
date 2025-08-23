@@ -28,7 +28,7 @@ export default function Chat({
         className={`group relative flex px-4 py-3 rounded-2xl ${
           isUser
             ? "bg-white shadow-sm ring-1 ring-[#e5e7eb] dark:bg-[#444654] dark:ring-0"
-            : "" // no extra bg for bot
+            : ""
         } ${selected ? "ring-2 ring-[#10a37f]" : ""} max-w-[50%]`}
       >
         <div className="prose prose-sm max-w-none break-words text-left text-[#0c0c0d] prose-headings:mb-1 prose-headings:mt-3 dark:prose-invert dark:text-[#ececf1]">
