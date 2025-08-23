@@ -55,7 +55,7 @@ export const LibraryIcon = ({ className }: IconProps) => (
     <path d="M14 17V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v12" />
   </svg>
 );
-export const ShareIcon = ({ className }: IconProps) => (
+export const ShareUpIcon = ({ className }: IconProps) => (
   <svg
     viewBox="0 0 24 24"
     className={cx("stroke-current", className)}
@@ -64,10 +64,15 @@ export const ShareIcon = ({ className }: IconProps) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M4 12v7a1 1 0 0 0 1 1h7" />
-    <path d="M14 10l7-7M21 3v6h-6" />
+    {/* Bigger centered arrow with space from tray */}
+    <path d="M12 3v12" />
+    <path d="M6 9l6-6 6 6" />
+
+    {/* Symmetrical rounded tray */}
+    <path d="M4 15v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
   </svg>
 );
+
 export const SettingsIcon = ({ className }: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

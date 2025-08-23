@@ -1,6 +1,6 @@
 // components/Layout/Header.tsx
 "use client";
-import { ChevronDownIcon, ShareIcon } from "../Icons";
+import { ChevronDownIcon, ShareUpIcon } from "../Icons";
 import { useState } from "react";
 
 const MODELS = [
@@ -53,7 +53,7 @@ export default function Header() {
           className="inline-flex items-center gap-1 rounded-md border border-[#e5e7eb] bg-white px-2.5 py-1.5 text-xs font-medium text-[#111] hover:bg-[#f3f4f6] dark:border-[#2a2b32] dark:bg-[#40414f] dark:text-[#e5e7eb] dark:hover:bg-[#4a4b57]"
           title="Share"
         >
-          <ShareIcon className="h-4 w-4" />
+          <ShareUpIcon className="h-4 w-4" />
           Share
         </button>
       </div>
