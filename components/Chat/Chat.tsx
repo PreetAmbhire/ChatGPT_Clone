@@ -18,7 +18,6 @@ export default function Chat({
 }) {
   const isUser = role === "user";
   const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(content);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Focus and resize textarea when editing
@@ -31,22 +30,22 @@ export default function Chat({
 
   // Auto-resize function
   const resizeTextarea = () => {
-    if (inputRef.current) {
-      inputRef.current.style.height = "auto";
-      inputRef.current.style.height = inputRef.current.scrollHeight + "px";
-    }
+    if (!inputRef.current) return; // early return if null
+    inputRef.current.style.height = "auto";
+    inputRef.current.style.height = inputRef.current.scrollHeight + "px";
   };
 
   const handleSave = () => {
+    if (!inputRef.current) return; // early return if null
     setIsEditing(false);
-    if (onUpdate && text.trim() !== content.trim()) {
-      onUpdate(text); // call parent to add new bot reply
+    const newText = inputRef.current.value;
+    if (onUpdate && newText.trim() !== content.trim()) {
+      onUpdate(newText);
     }
   };
 
-  // Default bot greeting if content is empty
   const displayContent =
-    !content && !isUser ? "Welcome! How can I help you today?" : text;
+    !content && !isUser ? "Welcome! How can I help you today?" : content;
 
   return (
     <div
@@ -60,11 +59,8 @@ export default function Chat({
         {isUser && isEditing ? (
           <textarea
             ref={inputRef}
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              resizeTextarea();
-            }}
+            defaultValue={content}
+            onChange={resizeTextarea}
             onBlur={handleSave}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -81,7 +77,7 @@ export default function Chat({
         )}
 
         <MessageActions
-          text={text}
+          text={displayContent}
           role={role}
           onEdit={isUser ? () => setIsEditing(true) : undefined}
         />
