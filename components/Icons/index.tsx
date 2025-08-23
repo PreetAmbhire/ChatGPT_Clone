@@ -133,6 +133,20 @@ export const PaperclipIcon = ({ className }: IconProps) => (
     <path d="M7 12v4a7 7 0 0 0 14 0" />
   </svg>
 );
+export const Pencil = ({ className }: IconProps) => (
+  <svg
+    viewBox="0 0 23 20"
+    className={cx("stroke-current", className)}
+    fill="none"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Pencil (angled body) */}
+    <path d="M16.5 3.5l4 4-11 11H5.5v-4l11-11z" />
+  </svg>
+);
+
 export const MagicEditIcon = ({ className }: IconProps) => (
   <svg
     viewBox="0 0 21 21"

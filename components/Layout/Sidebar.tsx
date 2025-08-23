@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Tooltip from "../UI/Tooltip";
 import {
   NewChatIcon,
@@ -11,23 +11,58 @@ import {
   ChevronRightIcon,
   RobotIcon,
   DotsIcon,
+  PaperclipIcon,
+  Pencil,
 } from "../Icons";
 import favicon from "../Icons/favicon.ico";
 
 const SIDEBAR_KEY = "sidebarCollapsed";
 
-export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+const attachOptions = [
+  { label: "Rename", icon: Pencil },
+  { label: "Delete", icon: PaperclipIcon },
+];
 
+export default function Sidebar() {
+  const [mounted, setMounted] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
+    null
+  );
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  // save collapsed state
   useEffect(() => {
     localStorage.setItem(SIDEBAR_KEY, collapsed ? "1" : "0");
   }, [collapsed]);
 
-  // Set a fixed width for buttons
-  const buttonWidth = "w-40"; // adjust as needed
+  // click outside closes dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        !buttonRefs.current.some(
+          (btn) => btn && btn.contains(event.target as Node)
+        )
+      ) {
+        setOpenDropdownIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
-    <div className="overflow-x-hidden relative">
+    <div className="overflow-x-hidden relative" ref={sidebarRef}>
       <aside
         className={`z-40 flex h-screen flex-shrink-0 flex-col border-r border-[#e5e7eb] bg-[#f7f7f8] transition-all duration-200 dark:border-[#2a2b32] dark:bg-[#202123] ${
           collapsed ? "w-16" : "w-64"
@@ -35,7 +70,6 @@ export default function Sidebar() {
       >
         {/* Top Section */}
         <div className="flex flex-col px-3 py-3 min-w-0 gap-2">
-          {/* Favicon + Chevron */}
           <div
             className={`flex w-full ${
               collapsed
@@ -44,11 +78,9 @@ export default function Sidebar() {
             }`}
           >
             <img src={favicon.src} alt="Logo" className="h-6 w-6" />
-
             <button
               onClick={() => setCollapsed((v) => !v)}
               className="rounded-md bg-white/90 p-1 text-[#6b6c70] shadow-sm ring-1 ring-[#e5e7eb] backdrop-blur dark:bg-[#40414f]/80 dark:text-[#9aa0a6] dark:ring-[#2a2b32]"
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
                 <ChevronRightIcon className="h-5 w-5" />
@@ -58,11 +90,10 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* New Chat */}
           <button
-            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0
-              ${collapsed ? "w-12 justify-center" : "w-full justify-start"}`}
-            title="New Chat"
+            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
+              collapsed ? "w-12 justify-center" : "w-full justify-start"
+            }`}
           >
             <NewChatIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
             {!collapsed && (
@@ -70,11 +101,10 @@ export default function Sidebar() {
             )}
           </button>
 
-          {/* Library */}
           <button
-            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0
-              ${collapsed ? "w-12 justify-center" : "w-full justify-start"}`}
-            title="Library"
+            className={`group mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0 ${
+              collapsed ? "w-12 justify-center" : "w-full justify-start"
+            }`}
           >
             <LibraryIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
             {!collapsed && (
@@ -86,33 +116,42 @@ export default function Sidebar() {
         {/* Chat history */}
         <div className="min-h-0 flex-1 overflow-y-auto px-2 min-w-0">
           {Array.from({ length: 14 }).map((_, i) => (
-            <button
-              key={i}
-              className="group relative flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0"
-            >
-              <RobotIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
-              {!collapsed && (
-                <span className="line-clamp-1 min-w-0">{`Conversation ${
-                  i + 1
-                }`}</span>
-              )}
+            <div key={i} className="group relative flex items-center">
+              <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[#3c3d3f] hover:bg-black/5 dark:text-[#e5e7eb] dark:hover:bg-white/5 min-w-0">
+                <RobotIcon className="h-4 w-4 opacity-70 flex-shrink-0" />
+                {!collapsed && (
+                  <span className="line-clamp-1 min-w-0">{`Conversation ${
+                    i + 1
+                  }`}</span>
+                )}
 
-              {/* DotsIcon - child of button, shows on hover */}
-              {!collapsed && (
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100">
+                {!collapsed && (
                   <button
-                    type="button"
-                    className="p-1"
+                    ref={(el) => {
+                      buttonRefs.current[i] = el;
+                    }}
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 transition-opacity ${
+                      openDropdownIndex === i
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100"
+                    }`}
                     onClick={(e) => {
-                      e.stopPropagation(); // prevent parent button click
-                      console.log(`Clicked DotsIcon for Conversation ${i + 1}`);
+                      e.stopPropagation();
+                      const rect =
+                        buttonRefs.current[i]?.getBoundingClientRect();
+                      if (rect)
+                        setDropdownPosition({
+                          top: rect.bottom,
+                          left: rect.right - 28 - 30,
+                        });
+                      setOpenDropdownIndex(openDropdownIndex === i ? null : i);
                     }}
                   >
                     <DotsIcon className="h-4 w-4 text-[#6b6c70] dark:text-[#9aa0a6]" />
                   </button>
-                </span>
-              )}
-            </button>
+                )}
+              </button>
+            </div>
           ))}
         </div>
 
@@ -146,6 +185,28 @@ export default function Sidebar() {
           )}
         </div>
       </aside>
+
+      {/* Render dropdown outside scrollable container */}
+      {openDropdownIndex !== null && (
+        <div
+          className="fixed z-50 w-28 rounded-xl border border-[#e5e7eb] bg-white shadow-lg dark:border-[#2a2b32] dark:bg-[#3a3b44] transition-opacity"
+          style={{
+            top: dropdownPosition.top,
+            left: dropdownPosition.left - -20,
+          }}
+        >
+          {attachOptions.map((option) => (
+            <button
+              key={option.label}
+              onClick={() => setOpenDropdownIndex(null)}
+              className="flex items-center gap-2 w-full px-3 py-2 text-left text-sm hover:bg-[#f3f4f6] dark:hover:bg-[#4a4b57] text-[#111] dark:text-[#e5e7eb]"
+            >
+              <option.icon className="h-4 w-4" />
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
-// components/Layout/Header.tsx
 "use client";
 import { ChevronDownIcon, ShareUpIcon } from "../Icons";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const MODELS = [
   { id: "gpt-4o", name: "GPT-4o" },
@@ -12,12 +11,37 @@ const MODELS = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [model, setModel] = useState(MODELS[0]);
+  const [mounted, setMounted] = useState(false);
+
+  const dropdownMenuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  // Close dropdown if clicking anywhere except button or menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownMenuRef.current &&
+        !dropdownMenuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-b border-[#e5e7eb] bg-[#f7f7f8]/80 px-4 backdrop-blur-sm dark:border-[#2a2b32] dark:bg-[#343541]/80 sm:px-6 md:px-8">
-      {/* model dropdown moved to left */}
+      {/* Model dropdown */}
       <div className="relative flex-1 flex items-center justify-start">
         <button
+          ref={buttonRef}
           onClick={() => setOpen((v) => !v)}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#111] hover:text-[#10a37f] dark:text-[#e5e7eb] dark:hover:text-[#10a37f]"
         >
@@ -26,7 +50,10 @@ export default function Header() {
         </button>
 
         {open && (
-          <div className="absolute top-full left-0 z-30 mt-1 w-40 max-h-60 overflow-y-auto rounded-md border border-[#e5e7eb] bg-white shadow-lg dark:border-[#2a2b32] dark:bg-[#3a3b44]">
+          <div
+            ref={dropdownMenuRef}
+            className="absolute top-full left-0 z-30 mt-1 w-40 max-h-60 overflow-y-auto rounded-md border border-[#e5e7eb] bg-white shadow-lg dark:border-[#2a2b32] dark:bg-[#3a3b44]"
+          >
             {MODELS.map((m) => (
               <button
                 key={m.id}
@@ -47,7 +74,7 @@ export default function Header() {
         )}
       </div>
 
-      {/* right share button */}
+      {/* Right share button */}
       <div className="absolute right-3">
         <button
           className="inline-flex items-center gap-1 rounded-md border border-[#e5e7eb] bg-white px-2.5 py-1.5 text-xs font-medium text-[#111] hover:bg-[#f3f4f6] dark:border-[#2a2b32] dark:bg-[#40414f] dark:text-[#e5e7eb] dark:hover:bg-[#4a4b57]"

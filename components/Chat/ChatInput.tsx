@@ -1,6 +1,5 @@
-// components/Chat/ChatInput.tsx
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   MicIcon,
   NewChatIcon,
@@ -10,7 +9,6 @@ import {
   GlobeIcon,
 } from "../Icons";
 
-// Define attach options outside the component
 const attachOptions = [
   { label: "Add photos and file", icon: PaperclipIcon },
   { label: "Canvas", icon: MagicEditIcon },
@@ -19,8 +17,9 @@ const attachOptions = [
 
 export default function ChatInput({ onSend }: { onSend: (t: string) => void }) {
   const [value, setValue] = useState("");
-  const taRef = useRef<HTMLTextAreaElement>(null);
   const [openAttach, setOpenAttach] = useState(false);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const attachRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!value.trim()) return;
@@ -29,11 +28,28 @@ export default function ChatInput({ onSend }: { onSend: (t: string) => void }) {
     taRef.current?.focus();
   };
 
+  // Close dropdown if click happens outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        attachRef.current &&
+        !attachRef.current.contains(event.target as Node)
+      ) {
+        setOpenAttach(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="relative rounded-full border border-[#e5e7eb] bg-white p-2 pr-3 shadow-sm dark:border-[#2a2b32] dark:bg-[#40414f]">
       <div className="flex items-end gap-2">
         {/* Attach button */}
-        <div className="relative">
+        <div ref={attachRef} className="relative">
           <button
             onClick={() => setOpenAttach((prev) => !prev)}
             className="rounded-full p-2 text-[#6b6c70] hover:bg-black/5 dark:text-[#b0b4ba] dark:hover:bg-white/5"
